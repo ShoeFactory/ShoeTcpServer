@@ -2,7 +2,10 @@
 #define SHOESERVER_H
 
 #include <QWidget>
+#include <QString>
+#include <QMap>
 #include "shoetcpserver.h"
+
 
 namespace Ui {
 class ShoeServer;
@@ -31,8 +34,20 @@ private slots:
 private:
     Ui::ShoeServer *ui;
     ShoeTcpServer *commServer;
-    bool sendPacket(int nDescriptor, MsgType msgType, QByteArray msgContent, quint16 msgNumber = 0x0001);
+
+    QMap<int, QString> m_descriptorIMEI;
+
+    // 发送
+    bool sendPacket(int nDescriptor, MsgType msgType, QByteArray msgContent);
+
+    // 接收
+    void receiveLogin(const int nDescriptor, QByteArray content);
+    void receiveGPS(const int nDescriptor, QByteArray content);
+    void receivePosition(const int nDescriptor, QByteArray content);
+    void receiveUpdateTime(const int nDescriptor, QByteArray content);
+    void reveiveSyncSetting(const int nDescriptor, QByteArray content);
 
 };
+
 
 #endif // SHOESERVER_H

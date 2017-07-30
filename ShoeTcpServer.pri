@@ -1,7 +1,8 @@
 # common complier config
-INCLUDEPATH +=  $$PWD/ShoeCommLibrary \
+INCLUDEPATH +=  $$PWD/ShoeUtilsLibrary \
+                $$PWD/ShoeCommLibrary  \
                 $$PWD/ShoeModelLibrary \
-                $$PWD/ShoeTestClient \
+                $$PWD/ShoeTestClient   \
                 $$PWD/ShoeTestServer
 
 Shoe_TargetPath = $$PWD/bin

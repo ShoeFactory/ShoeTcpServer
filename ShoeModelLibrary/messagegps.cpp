@@ -1,10 +1,10 @@
+#include <QJsonObject>
 #include "messagegps.h"
+#include "shoeutilslibrary.h"
 
 MessageGPS::MessageGPS()
 {
-    QByteArray content;
-    content = content.fromHex("0A03170F32179C026B3F3E0C22AD651F3460");
-    setData(content);
+
 }
 
 MessageGPS::MessageGPS(const MessageGPS &other)
@@ -19,47 +19,123 @@ MessageGPS::MessageGPS(const QByteArray byteArray)
 
 QDateTime MessageGPS::getDateTime()
 {
-    return QDateTime();
+    QByteArray datetimeByteArray = m_data.mid(0, 6);
+    int year   = datetimeByteArray[0];
+    int month  = datetimeByteArray[1];
+    int day    = datetimeByteArray[2];
+    int hour   = datetimeByteArray[3];
+    int minute = datetimeByteArray[4];
+    int second = datetimeByteArray[5];
+
+    QDate date;
+    date.setDate(year+2000, month, day);
+
+    QTime time;
+    time.setHMS(hour, minute, second);
+
+    QDateTime datetime;
+    datetime.setDate(date);
+    datetime.setTime(time);
+
+    return datetime;
 }
 
-int MessageGPS::getMessageLength()
+void MessageGPS::getMessageLengthAndSatelliteCount(int &ML, int &SC)
 {
-    return 0;
+    char mlsc = m_data.at(6);
+
+    ML = (mlsc & 0xF0) >> 4;
+
+    SC = (mlsc & 0x0F);
 }
 
-int MessageGPS::getSatelliteCount()
+QString MessageGPS::getLongitude()
 {
-    return 0;
+    QByteArray longitudeByteArray = m_data.mid(7, 4);
+
+    bool ok;
+    unsigned int longitude = longitudeByteArray.toHex().toUInt(&ok, 16);
+
+    double temp = longitude / 30000.0;
+
+    int degree = int(temp / 60);
+    double smallDegree = temp -(int(temp / 60)) * 60;
+
+    return QString::number(degree) + "°" + QString::number(smallDegree, 'f', 4) + "'";
 }
 
-int MessageGPS::getLongitude()
+QString MessageGPS::getLatitude()
 {
-    return 0;
-}
+    QByteArray latitudeByteArray = m_data.mid(11, 4);
 
-int MessageGPS::getlatitude()
-{
-    return 0;
+    bool ok;
+    unsigned int latitude = latitudeByteArray.toHex().toUInt(&ok, 16);
+
+    double temp = latitude / 30000.0;
+
+    int degree = int(temp / 60);
+    double smallDegree = temp -(int(temp / 60)) * 60;
+
+    return QString::number(degree) + "°" + QString::number(smallDegree, 'f', 4) + "'";
 }
 
 int MessageGPS::getSpeed()
 {
-    return 0;
+    unsigned char mlsc = m_data.at(15);
+    return mlsc;
 }
 
-QString MessageGPS::getStatus()
+void MessageGPS::getStatusAndDirection(QString &status, int &direction)
 {
-    return QString();
+    QByteArray statusAndDirectionByteArray = m_data.right(2);
+
+    char statusChar = statusAndDirectionByteArray.at(0);
+
+    QString positioned   = (statusChar & 0x10) ? "在定位" : "不在定位";
+    QString weastOrEast  = (statusChar & 0x08) ? "西经" : "东经";
+    QString northOrSouth = (statusChar & 0x04) ? "北纬" : "南纬";
+
+    status = positioned + " " + weastOrEast + " " + northOrSouth;
+
+    QByteArray hex = statusAndDirectionByteArray.toHex();
+    bool ok;
+    short total = hex.toShort(&ok, 16);
+    direction = (int)(total & 0x03FF);
 }
 
-int MessageGPS::getDirection()
+QJsonObject MessageGPS::getjsonObject()
 {
-    return 0;
-}
+    QJsonObject object;
+    // 日期
+    QString dateTimeString = getDateTime().toString("yyMMdd:hhmmss");
+    object.insert("datetime", QJsonValue(dateTimeString));
+    // 消息长度 卫星个数
+    int messageLength=0;
+    int satelliteCount=0;
+    getMessageLengthAndSatelliteCount(messageLength, satelliteCount);
+    object.insert("messageLength", QJsonValue(messageLength));
+    object.insert("satellitecount", QJsonValue(satelliteCount));
+    // 经度
+    QString longitude = getLongitude();
+    object.insert("longitude", QJsonValue(longitude));
+    // 维度
+    QString latitude = getLatitude();
+    object.insert("latitude", QJsonValue(latitude));
+    // 速度
+    int speed = getSpeed();
+    QString speedString = QString::number(speed) + "公里/小时";
+    object.insert("speed", QJsonValue(speedString));
+    // 状态 航向
+    QString status;
+    QString directionString;
+    int direction;
+    getStatusAndDirection(status, direction);
+    directionString = QString::number(direction) + "°";
 
-QString MessageGPS::getJsonString()
-{
-    return QString("{}");
+    object.insert("status", QJsonValue(status));
+    object.insert("direction", QJsonValue(directionString));
+
+    return object;
 }
 
 void MessageGPS::setData(const QByteArray &data)

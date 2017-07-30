@@ -1,6 +1,5 @@
 #include <QHostAddress>
 #include "shoetcpserver.h"
-#include "shoehelper.h"
 
 ShoeTcpServer::ShoeTcpServer(QObject *parent)
     : QTcpServer(parent)

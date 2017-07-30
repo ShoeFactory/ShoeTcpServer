@@ -36,11 +36,12 @@ FORMS += \
 
 
 CONFIG(debug, debug|release) {
-    LIBS += -lShoeCommLibraryd \
+    LIBS += -lShoeUtilsLibraryd \
+            -lShoeCommLibraryd \
             -lShoeModelLibraryd
 } else {
-    LIBS += -lShoeCommLibrary \
+    LIBS += -lShoeUtilsLibrary \
+            -lShoeCommLibrary \
             -lShoeModelLibrary
 }
-
 

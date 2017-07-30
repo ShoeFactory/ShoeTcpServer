@@ -27,8 +27,6 @@ private slots:
 
     void on_pushButton_connect_clicked();
 
-    void on_pushButton_status_clicked();
-
     void on_pushButton_gps_clicked();
 
     void on_pushButton_login_clicked();
@@ -36,8 +34,7 @@ private slots:
 private:
     Ui::ShoeClient *ui;
     ShoeTcpClient *commClient;
-    bool sendPacket(MsgType msgType, QByteArray msgContent, quint16 msgNumber = 0x0001);
-
+    bool sendPacket(MsgType msgType, QByteArray msgContent);
 };
 
 #endif // SHOECLIENT_H

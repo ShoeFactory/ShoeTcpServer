@@ -7,19 +7,22 @@
 class SHOEMODELLIBRARYSHARED_EXPORT MessageLogin
 {
 public:
+
     MessageLogin();
     MessageLogin(const MessageLogin &other);
-    MessageLogin(const QByteArray byteArray);
 
-    //  8字节
+    // 留作以后的标识
     QString getIMEI();
 
-    void removeIMEI();//用于服务器回复客户端登录请求
-
+    // 返回核心
     QByteArray getData() const;
-    void setData(const QByteArray &data);
+    void setData(QByteArray data);
+
+    void setIMEI(QByteArray imei);
+    void setVersion(QByteArray version);
 
 private:
-    QByteArray m_data;
+    QByteArray m_imei;
+    QByteArray m_version;
 };
 #endif // MESSAGELOGIN_H

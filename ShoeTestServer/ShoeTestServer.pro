@@ -26,21 +26,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        shoeserver.cpp
+        shoeserver.cpp \
+    shoehttpaccesss.cpp
 
 HEADERS += \
-        shoeserver.h
+        shoeserver.h \
+    shoehttpaccesss.h
 
 FORMS += \
         shoeserver.ui
 
 
 CONFIG(debug, debug|release) {
-    LIBS += -lShoeCommLibraryd \
+    LIBS += -lShoeUtilsLibraryd \
+            -lShoeCommLibraryd  \
             -lShoeModelLibraryd
 
 } else {
-    LIBS += -lShoeCommLibrary \
+    LIBS += -lShoeUtilsLibrary \
+            -lShoeCommLibrary  \
             -lShoeModelLibrary
 }
 

@@ -1,19 +1,25 @@
 #include "shoetcpsocket.h"
-#include "shoehelper.h"
+#include "shoeutilslibrary.h"
 
-QList<qint8> PacketTypeList = QList<qint8>() << 0x01 << 0x12 << 0x13 << 0x15 << 0x16 << 0x80;
+/*Packet == WrappedPacket 之间类型的转换*/
+QList<qint8> PacketTypeList = QList<qint8>() << 0x01 << 0x44 << 0x08 << 0x69 << 0x17 << 0x30 << 0x57 << 0x10
+                                             << 0x13 << 0x15 << 0x16 << 0x80 << 0x00;
+static int HexToEnumOfMsgType(qint8 type)
+{
+    return PacketTypeList.indexOf(type);
+}
 
-/**
- * 数据包 底层运用
- */
+static MsgType EnumToHexOfMsgType(int index)
+{
+    return (MsgType)PacketTypeList.value(index);
+}
+
 typedef struct WrappedPacket
 {
     qint16      start;          //  起始位   2
     quint8      length;         //  长度     1
     qint8       msgType;        //  包类型   1
     QByteArray  msgContent;     //  包内容   N
-    quint16     msgNumber;      //  序号     2
-    qint16      crc;            //  校验     2
     qint16      stop;           //  停止位   2
 }WrappedPacket;
 Q_DECLARE_METATYPE(WrappedPacket)
@@ -21,28 +27,31 @@ Q_DECLARE_METATYPE(WrappedPacket)
 static QDataStream& operator << (QDataStream& stream, const WrappedPacket& packet)
 {
     stream << packet.start;
+
     stream << packet.length;
     stream << packet.msgType;
+
     int contentLength = packet.msgContent.size();
     for(int i=0; i<contentLength; i++)
     {
         qint8 temp =  packet.msgContent.at(i);
         stream << temp;
     }
-    stream << packet.msgNumber;
-    stream << packet.crc;
+
     stream << packet.stop;
     return stream;
 }
 
 static QDataStream& operator >> (QDataStream& stream, WrappedPacket& packet)
 {
-    // 解析的时候 bytearray没法解析？
     stream >> packet.start;
     stream >> packet.length;
+
+    // 协议号
     stream >> packet.msgType;
 
-    int contentLength = packet.length-10;
+    // 内容长度 = 长度 - 协议号长度
+    int contentLength = packet.length-1;
     QByteArray content;
     content.resize(contentLength);
     for(int i=0; i<contentLength; i++)
@@ -53,45 +62,31 @@ static QDataStream& operator >> (QDataStream& stream, WrappedPacket& packet)
     }
     packet.msgContent = content;
 
-    stream >> packet.msgNumber;
-    stream >> packet.crc;
     stream >> packet.stop;
     return stream;
 }
 
-/**
- * 压缩数据包
- */
 static WrappedPacket wrapPacket(const Packet& packet)
 {
     WrappedPacket result;
 
     result.start = 0x7878;
-
-    result.msgType = PacketTypeList.at(packet.msgType);
-
-    result.msgContent = packet.msgContent;
-
-    result.msgNumber = packet.msgNumber;
-
-    result.crc = 0xffff;
-
     result.stop  = 0x0D0A;
 
-    result.length = (quint8) (result.msgContent.size() + 10);
+    result.msgType    = EnumToHexOfMsgType(packet.msgType);
+    result.msgContent = packet.msgContent;
+
+    // 长度 = 协议号+内容 协议号一般是1个字节
+    result.length = (quint8) (result.msgContent.size() + 1);
 
     return result;
 }
 
-/**
- * 解压数据包
- */
 static Packet extractPacket(const WrappedPacket& wrappedPacket)
 {
     Packet result;
-    result.msgNumber = wrappedPacket.msgNumber;
     result.msgContent = wrappedPacket.msgContent;
-    result.msgType = (MsgType)PacketTypeList.indexOf(wrappedPacket.msgType);
+    result.msgType = (MsgType)HexToEnumOfMsgType(wrappedPacket.msgType);
     return result;
 }
 
@@ -139,12 +134,12 @@ bool ShoeTcpSocket::sendRule(const Packet &packet)
             break;
         }
 
-        // 检验是否完整发送
-        if (sendLen < (qint64)wrappedPacket.length)
-        {
-            qCritical() << "client write bytes to socket failed.";
-            break;
-        }
+//        // 检验是否完整发送
+//        if (sendLen < (qint64)(wrappedPacket.length + 5))
+//        {
+//            qCritical() << "client write bytes to socket failed.";
+//            break;
+//        }
 
         bRet = true;
     } while(false);
@@ -161,14 +156,6 @@ void ShoeTcpSocket::receiveRule(QByteArray &recvBuffer)
     while(true)
     {
         int totalLen = recvBuffer.size();
-        if(totalLen<=0)
-            break;
-
-        qint16 mesg_start;
-        quint8 mesg_len(0);
-
-        //与QDataStream绑定，方便操作。
-        QDataStream in(recvBuffer);
 
         //不够包头的数据直接就不处理。
         if( totalLen < (int)(sizeof(quint16) + sizeof(quint8))  )
@@ -176,11 +163,14 @@ void ShoeTcpSocket::receiveRule(QByteArray &recvBuffer)
             break;
         }
 
-        in >> mesg_start;
-        in >> mesg_len;
+        //与QDataStream绑定，方便操作。
+        QDataStream in(recvBuffer);
 
-        //如果不够长度等够了在来解析
-        if( totalLen < (int)mesg_len )
+        // 找结束点
+        int stopPosition = recvBuffer.indexOf(QByteArray::fromHex("0d0a"));
+
+        // 没找到 退出
+        if(stopPosition == -1)
         {
             break;
         }
@@ -188,13 +178,26 @@ void ShoeTcpSocket::receiveRule(QByteArray &recvBuffer)
         //数据包已收够，进行解析
         WrappedPacket wrappedPacket;
         in.device()->seek(0);
-        in >> wrappedPacket;
+
+        in >> wrappedPacket.start;
+        in >> wrappedPacket.length;
+        wrappedPacket.length = stopPosition-3;
+        in >> wrappedPacket.msgType;
+        QByteArray content;
+        for(int i=0; i<stopPosition-4; i++)
+        {
+            qint8 temp;
+            in >> temp;
+            content.append(temp);
+        }
+        wrappedPacket.msgContent = content;
+        in >> wrappedPacket.stop;
 
         // 通知外界已接收
         emit onPacketReceived(extractPacket(wrappedPacket), socketDescriptor());
 
         //用多余的数据更新缓存
-        recvBuffer = recvBuffer.right(totalLen - mesg_len);
+        recvBuffer = recvBuffer.right(totalLen - (stopPosition+2));
     }
 }
 
@@ -218,6 +221,8 @@ void ShoeTcpSocket::slotDataReceived()
 
     //临时获得从缓存区取出来的数据，但是不确定每次取出来的是多少。
     QByteArray buffer = readAll();
+
+    ShoeUtilsLibrary::DebugTimeString(buffer.toHex());
 
     //上次缓存加上这次数据
     recvBuffer.append(buffer);

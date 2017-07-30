@@ -3,7 +3,8 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += \
-    ShoeCommLibrary \
+    ShoeUtilsLibrary \
+    ShoeCommLibrary  \
     ShoeModelLibrary \
-    ShoeTestClient \
+    ShoeTestClient   \
     ShoeTestServer

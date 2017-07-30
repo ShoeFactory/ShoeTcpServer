@@ -3,40 +3,45 @@
 
 MessageLogin::MessageLogin()
 {
-    QByteArray IMEI;
-    IMEI = IMEI.fromHex("0123456789012345");
 
-    setData(IMEI);
 }
 
 MessageLogin::MessageLogin(const MessageLogin &other)
 {
-    m_data = other.m_data;
-}
-
-MessageLogin::MessageLogin(const QByteArray byteArray)
-{
-    m_data = byteArray;
+    m_imei = other.m_imei;
+    m_version = other.m_version;
 }
 
 QString MessageLogin::getIMEI()
 {
-    return getData().toHex();
-}
-
-void MessageLogin::removeIMEI()
-{
-    QByteArray IMEI;
-    IMEI.clear();
-    setData(IMEI);
+    return m_imei.toHex();
 }
 
 QByteArray MessageLogin::getData() const
 {
-    return m_data;
+    QByteArray result;
+
+    result.append(m_imei);
+    result.append(m_version);
+
+    return result;
 }
 
-void MessageLogin::setData(const QByteArray &data)
+void MessageLogin::setData(QByteArray data)
 {
-    m_data = data;
+    m_imei.clear();
+    m_imei = data.left(8);
+
+    m_version.clear();
+    m_version=data.right(1);
+}
+
+void MessageLogin::setIMEI(QByteArray imei)
+{
+    m_imei = imei;
+}
+
+void MessageLogin::setVersion(QByteArray version)
+{
+    m_version = version;
 }

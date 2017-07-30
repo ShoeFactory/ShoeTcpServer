@@ -1,5 +1,5 @@
 #include "shoetcpclient.h"
-#include "shoehelper.h"
+#include "shoeutilslibrary.h"
 
 ShoeTcpClient::ShoeTcpClient(QObject *parent)
     :QObject(parent)
@@ -30,7 +30,7 @@ bool ShoeTcpClient::initialize(QHostAddress address, int port)
 
             if (!m_socket->waitForConnected(WAIT_CONNECT_TIMEOUT))
             {
-                ShoeHelper::qDebugString("wait for connect timeout");
+                ShoeUtilsLibrary::DebugTimeString("wait for connect timeout");
                 continue;
             }
             else
