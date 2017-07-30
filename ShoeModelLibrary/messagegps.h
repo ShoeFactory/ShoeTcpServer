@@ -24,10 +24,12 @@ public:
     void getMessageLengthAndSatelliteCount(int &ML, int &SC);
 
     //  4字节 经度  x°y'       (x*60+y)*30000        = result  ==> 16进制
-    QString getLongitude();
+    QString getLongitudeString();
+    quint32 getLongitude();
 
     //  4字节 维度  22°32.7658 (22*60+32.7658)*30000 = 4056974 ==> 16进制
-    QString getLatitude();
+    QString getLatitudeString();
+    quint32 getLatitude();
 
     //  1字节 速度 公里/小时
     int getSpeed();

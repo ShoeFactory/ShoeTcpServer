@@ -49,7 +49,7 @@ void MessageGPS::getMessageLengthAndSatelliteCount(int &ML, int &SC)
     SC = (mlsc & 0x0F);
 }
 
-QString MessageGPS::getLongitude()
+QString MessageGPS::getLongitudeString()
 {
     QByteArray longitudeByteArray = m_data.mid(7, 4);
 
@@ -64,7 +64,17 @@ QString MessageGPS::getLongitude()
     return QString::number(degree) + "°" + QString::number(smallDegree, 'f', 4) + "'";
 }
 
-QString MessageGPS::getLatitude()
+quint32 MessageGPS::getLongitude()
+{
+    QByteArray longitudeByteArray = m_data.mid(7, 4);
+
+    bool ok;
+    unsigned int longitude = longitudeByteArray.toHex().toUInt(&ok, 16);
+
+    return longitude;
+}
+
+QString MessageGPS::getLatitudeString()
 {
     QByteArray latitudeByteArray = m_data.mid(11, 4);
 
@@ -77,6 +87,16 @@ QString MessageGPS::getLatitude()
     double smallDegree = temp -(int(temp / 60)) * 60;
 
     return QString::number(degree) + "°" + QString::number(smallDegree, 'f', 4) + "'";
+}
+
+quint32 MessageGPS::getLatitude()
+{
+    QByteArray latitudeByteArray = m_data.mid(11, 4);
+
+    bool ok;
+    unsigned int latitude = latitudeByteArray.toHex().toUInt(&ok, 16);
+
+    return latitude;
 }
 
 int MessageGPS::getSpeed()
@@ -106,25 +126,31 @@ void MessageGPS::getStatusAndDirection(QString &status, int &direction)
 QJsonObject MessageGPS::getjsonObject()
 {
     QJsonObject object;
+
     // 日期
     QString dateTimeString = getDateTime().toString("yyMMdd:hhmmss");
     object.insert("datetime", QJsonValue(dateTimeString));
+
     // 消息长度 卫星个数
     int messageLength=0;
     int satelliteCount=0;
     getMessageLengthAndSatelliteCount(messageLength, satelliteCount);
     object.insert("messageLength", QJsonValue(messageLength));
     object.insert("satellitecount", QJsonValue(satelliteCount));
+
     // 经度
-    QString longitude = getLongitude();
+    quint32 longitude = getLongitude();
     object.insert("longitude", QJsonValue(longitude));
+
     // 维度
-    QString latitude = getLatitude();
+    quint32 latitude = getLatitude();
     object.insert("latitude", QJsonValue(latitude));
+
     // 速度
     int speed = getSpeed();
     QString speedString = QString::number(speed) + "公里/小时";
     object.insert("speed", QJsonValue(speedString));
+
     // 状态 航向
     QString status;
     QString directionString;
