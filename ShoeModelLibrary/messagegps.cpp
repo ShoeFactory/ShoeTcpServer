@@ -128,22 +128,22 @@ QJsonObject MessageGPS::getjsonObject()
     QJsonObject object;
 
     // 日期
-    QString dateTimeString = getDateTime().toString("yyMMdd:hhmmss");
+    QString dateTimeString = getDateTime().toString("yyyy-MM-dd hh:mm:ss");
     object.insert("datetime", QJsonValue(dateTimeString));
 
     // 消息长度 卫星个数
     int messageLength=0;
     int satelliteCount=0;
     getMessageLengthAndSatelliteCount(messageLength, satelliteCount);
-    object.insert("messageLength", QJsonValue(messageLength));
-    object.insert("satellitecount", QJsonValue(satelliteCount));
+    object.insert("message_length", QJsonValue(messageLength));
+    object.insert("satellite_count", QJsonValue(satelliteCount));
 
     // 经度
-    quint32 longitude = getLongitude();
+    qint64 longitude = (qint64)getLongitude();
     object.insert("longitude", QJsonValue(longitude));
 
     // 维度
-    quint32 latitude = getLatitude();
+    qint64 latitude = (qint64)getLatitude();
     object.insert("latitude", QJsonValue(latitude));
 
     // 速度
