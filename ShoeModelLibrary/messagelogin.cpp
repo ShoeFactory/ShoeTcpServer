@@ -14,7 +14,14 @@ MessageLogin::MessageLogin(const MessageLogin &other)
 
 QString MessageLogin::getIMEI()
 {
-    return m_imei.toHex();
+    /**
+      * 这里牵扯这个imei是bcd编码
+      * 0123456789012345 m_imei.toHex() 是
+      *  123456789012345 第一个去掉
+      *
+     */
+    QString result = QString(m_imei.toHex());
+    return  result.remove(0, 1);
 }
 
 QByteArray MessageLogin::getData() const
