@@ -58,7 +58,24 @@ QByteArray ShoeUtilsLibrary::UrlFromStrFromJsonObject(QJsonObject jsonObject)
     QJsonObject::const_iterator it;
     for(it=jsonObject.begin(); it!=jsonObject.end();it++)
     {
-        query.addQueryItem(it.key(), it.value().toString());
+        QString value;
+        switch (it.value().type()) {
+        case QJsonValue::String:
+            value = it.value().toString();
+            break;
+        case QJsonValue::Double:
+        {
+            value = it.value().toInt(-1);
+            if(value == -1)
+                value = QString::number(it.value().toDouble());
+            else
+                value = QString::number(it.value().toInt());
+        }
+            break;
+        default:
+            break;
+        }
+        query.addQueryItem(it.key(), value);
     }
 
     return query.toString(QUrl::FullyEncoded).toUtf8();
