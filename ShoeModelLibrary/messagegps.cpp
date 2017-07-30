@@ -148,18 +148,15 @@ QJsonObject MessageGPS::getjsonObject()
 
     // 速度
     int speed = getSpeed();
-    QString speedString = QString::number(speed) + "公里/小时";
-    object.insert("speed", QJsonValue(speedString));
+    object.insert("speed", QJsonValue(speed));
 
     // 状态 航向
     QString status;
-    QString directionString;
     int direction;
     getStatusAndDirection(status, direction);
-    directionString = QString::number(direction) + "°";
 
     object.insert("status", QJsonValue(status));
-    object.insert("direction", QJsonValue(directionString));
+    object.insert("direction", QJsonValue(direction));
 
     return object;
 }
