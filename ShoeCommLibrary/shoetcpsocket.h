@@ -1,4 +1,4 @@
-#ifndef SHOETCPSOCKET_H
+﻿#ifndef SHOETCPSOCKET_H
 #define SHOETCPSOCKET_H
 
 #include <QTcpSocket>

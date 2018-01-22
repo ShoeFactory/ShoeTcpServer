@@ -1,4 +1,4 @@
-#ifndef SHOESERVER_H
+﻿#ifndef SHOESERVER_H
 #define SHOESERVER_H
 
 #include <QWidget>

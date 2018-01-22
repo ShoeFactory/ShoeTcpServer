@@ -1,4 +1,4 @@
-#include <QJsonObject>
+﻿#include <QJsonObject>
 #include "messagegps.h"
 #include "shoeutilslibrary.h"
 

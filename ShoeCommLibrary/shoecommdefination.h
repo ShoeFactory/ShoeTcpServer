@@ -1,11 +1,11 @@
-#ifndef SHOECOMMDEFINATION_H
+﻿#ifndef SHOECOMMDEFINATION_H
 #define SHOECOMMDEFINATION_H
 
 #include <QByteArray>
 #include <QVariant>
 #include <QDataStream>
 #include <QDateTime>
-
+#include "shoecommlibrary_global.h"
 /**
  * 数据包类型
  *
@@ -37,7 +37,7 @@ typedef enum MsgType
     PacketType_Count
 }MsgType;
 extern QStringList MsgTypeStringList;
-extern QString MsgTypeString(const MsgType &type);
+SHOECOMMLIBRARYSHARED_EXPORT QString MsgTypeString(const MsgType &type);
 
 /**
  * 数据包 上层运用

@@ -1,4 +1,4 @@
-#ifndef MESSAGELOGIN_H
+﻿#ifndef MESSAGELOGIN_H
 #define MESSAGELOGIN_H
 
 #include <QByteArray>

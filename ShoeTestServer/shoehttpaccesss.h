@@ -1,4 +1,4 @@
-#ifndef SHOEHTTPACCESSS_H
+﻿#ifndef SHOEHTTPACCESSS_H
 #define SHOEHTTPACCESSS_H
 
 #include <QNetworkAccessManager>

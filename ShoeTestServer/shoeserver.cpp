@@ -1,4 +1,4 @@
-#include <QJsonValue>
+﻿#include <QJsonValue>
 
 #include "shoeutilslibrary.h"
 

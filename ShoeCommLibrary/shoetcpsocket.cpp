@@ -1,4 +1,4 @@
-#include "shoetcpsocket.h"
+﻿#include "shoetcpsocket.h"
 #include "shoeutilslibrary.h"
 
 /*Packet == WrappedPacket 之间类型的转换*/

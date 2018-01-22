@@ -1,4 +1,4 @@
-#ifndef SHOEUTILSLIBRARY_H
+﻿#ifndef SHOEUTILSLIBRARY_H
 #define SHOEUTILSLIBRARY_H
 
 #include <QJsonObject>

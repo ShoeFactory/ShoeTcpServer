@@ -82,14 +82,17 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
        <item>
         <property name="text">
-         <string>127.0.0.1</string>
+         <string>47.93.6.161</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>47.93.6.161</string>
+         <string>127.0.0.1</string>
         </property>
        </item>
        <item>

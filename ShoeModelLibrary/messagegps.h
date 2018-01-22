@@ -1,4 +1,4 @@
-#ifndef MESSAGEGPS_H
+﻿#ifndef MESSAGEGPS_H
 #define MESSAGEGPS_H
 
 #include <QByteArray>
