@@ -36,6 +36,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButton_wifilbs">
+         <property name="text">
+          <string>模拟wifilbs</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButton_clear">
          <property name="text">
           <string>清空</string>

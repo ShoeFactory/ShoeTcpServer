@@ -1,4 +1,4 @@
-#ifndef SHOETCPCLIENT_H
+﻿#ifndef SHOETCPCLIENT_H
 #define SHOETCPCLIENT_H
 
 #include <QHostAddress>
@@ -19,6 +19,7 @@ public:
     bool finalize();
 
     bool sendPacket(const Packet& packet);
+    bool sendData(const QByteArray &data);
 
 signals:
     void onConnected();

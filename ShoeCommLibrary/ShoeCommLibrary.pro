@@ -12,6 +12,8 @@ QT       -= gui
 TEMPLATE = lib
 CONFIG += shared
 
+msvc:QMAKE_CXXFLAGS += -execution-charset:utf-8
+
 DEFINES += SHOECOMMLIBRARY_LIBRARY
 
 # The following define makes your compiler emit warnings if you use

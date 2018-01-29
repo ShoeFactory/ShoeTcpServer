@@ -1,4 +1,4 @@
-#ifndef SHOECLIENT_H
+﻿#ifndef SHOECLIENT_H
 #define SHOECLIENT_H
 
 #include <QWidget>
@@ -30,6 +30,8 @@ private slots:
     void on_pushButton_gps_clicked();
 
     void on_pushButton_login_clicked();
+
+    void on_pushButton_wifilbs_clicked();
 
 private:
     Ui::ShoeClient *ui;

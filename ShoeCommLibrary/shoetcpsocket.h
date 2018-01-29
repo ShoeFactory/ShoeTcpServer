@@ -14,9 +14,11 @@ public:
 public:
     void setSocketID(const int nDescriptor);
     bool sendPacket(const Packet& packet);
+    bool sendData(const QByteArray &data);
 
     // 发送规则
     bool sendRule(const Packet& packet);
+    bool sendRule(const QByteArray &data);
 
     // 解析规则
     void receiveRule(QByteArray &recvBuffer);

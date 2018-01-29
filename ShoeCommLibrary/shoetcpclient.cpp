@@ -1,4 +1,4 @@
-#include "shoetcpclient.h"
+﻿#include "shoetcpclient.h"
 #include "shoeutilslibrary.h"
 
 ShoeTcpClient::ShoeTcpClient(QObject *parent)
@@ -70,4 +70,9 @@ bool ShoeTcpClient::finalize()
 bool ShoeTcpClient::sendPacket(const Packet &packet)
 {
     return m_socket->sendPacket(packet);
+}
+
+bool ShoeTcpClient::sendData(const QByteArray &data)
+{
+    return m_socket->sendData(data);
 }

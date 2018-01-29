@@ -10,6 +10,7 @@ QT       -= gui
 TEMPLATE = lib
 CONFIG += shared
 
+msvc:QMAKE_CXXFLAGS += -execution-charset:utf-8
 
 DEFINES += SHOEMODELLIBRARY_LIBRARY
 

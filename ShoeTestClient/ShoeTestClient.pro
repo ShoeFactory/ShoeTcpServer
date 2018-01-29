@@ -8,6 +8,8 @@ include( $$PWD/../ShoeTcpServer.pri )
 QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+msvc:QMAKE_CXXFLAGS += -execution-charset:utf-8
+
 
 TARGET = ShoeTcpClient
 TEMPLATE = app

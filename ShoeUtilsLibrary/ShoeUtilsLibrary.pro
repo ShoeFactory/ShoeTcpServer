@@ -11,6 +11,8 @@ QT       -= gui
 
 TEMPLATE = lib
 
+msvc:QMAKE_CXXFLAGS += -execution-charset:utf-8
+
 DEFINES += SHOEUTILSLIBRARY_LIBRARY
 
 # The following define makes your compiler emit warnings if you use

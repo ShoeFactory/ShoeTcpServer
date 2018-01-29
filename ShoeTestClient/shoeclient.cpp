@@ -1,4 +1,4 @@
-#include <QLineEdit>
+﻿#include <QLineEdit>
 #include "shoeutilslibrary.h"
 
 #include "shoeclient.h"
@@ -55,6 +55,8 @@ void ShoeClient::slotErrorOccurred(const QString &errorString)
 
 void ShoeClient::on_pushButton_connect_clicked()
 {
+    qDebug() << ui->pushButton_connect->text();
+
     if(ui->pushButton_connect->text()=="连接")
         commClient->initialize(QHostAddress(ui->comboBox_ip->currentText()), ui->spinBox_port->value());
     else
@@ -84,4 +86,9 @@ bool ShoeClient::sendPacket(MsgType msgType, QByteArray msgContent)
 void ShoeClient::on_pushButton_clear_clicked()
 {
     ui->textEdit->clear();
+}
+
+void ShoeClient::on_pushButton_wifilbs_clicked()
+{
+    commClient->sendData(QByteArray::fromHex("787800691604130318490501CC0028660F213228660F1F2828660EA81E286610731428660F20140D0A"));
 }

@@ -110,6 +110,11 @@ bool ShoeTcpSocket::sendPacket(const Packet &packet)
     return sendRule(packet);
 }
 
+bool ShoeTcpSocket::sendData(const QByteArray &data)
+{
+    return sendRule(data);
+}
+
 bool ShoeTcpSocket::sendRule(const Packet &packet)
 {
     bool bRet(false);
@@ -147,6 +152,33 @@ bool ShoeTcpSocket::sendRule(const Packet &packet)
     // 通知外界已发送
     if(bRet)
         emit onPacketSend(packet, socketDescriptor());
+
+    return bRet;
+}
+
+bool ShoeTcpSocket::sendRule(const QByteArray &data)
+{
+    bool bRet(false);
+
+    do
+    {
+
+        // 开始发送网络字节
+        qint64 sendLen = write(data);
+
+        // 等待写入完成
+        if (!waitForBytesWritten())
+        {
+            qCritical() << "client write bytes to socket failed.";
+            break;
+        }
+
+        bRet = true;
+    } while(false);
+
+    // 通知外界已发送
+//    if(bRet)
+//        emit onPacketSend(packet, socketDescriptor());
 
     return bRet;
 }
